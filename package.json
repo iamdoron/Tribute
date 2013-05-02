@@ -20,7 +20,8 @@
   "gitHead": "e87bf1dd099aef87c381f5223d93388fc508cb12",
   "devDependencies": {
     "coffee-script": "~1.6.2",
-    "mocha": "~1.9.0"
+    "mocha": "~1.9.0",
+    "chai": "~1.6.0"
   },
   "dependencies": {
     "hapi": "~1.0.0"
