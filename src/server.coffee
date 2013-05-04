@@ -1,6 +1,7 @@
 Hapi = require 'hapi'
-exports.createServer = ->
-	server = Hapi.createServer 'localhost', 8000
+
+exports.createServer = (tls)->
+	server = Hapi.createServer '0.0.0.0', 8000, {cors:true, tls:tls}
 	server.route 
 		method: "*"
 		path: "/status"
