@@ -1,0 +1,2 @@
+openssl genrsa 4096 > key.pem
+openssl req -new -x509 -nodes -sha1 -days 4000 -key key.pem >cert.pem
