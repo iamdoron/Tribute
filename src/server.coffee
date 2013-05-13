@@ -1,11 +1,19 @@
 Hapi = require 'hapi'
 
-exports.createServer = (tls)->
-	server = Hapi.createServer '0.0.0.0', 8000, {cors:true, tls:tls}
+exports.createServer = (options)->
+	server = Hapi.createServer '0.0.0.0', 8000, {cors:true, tls:options.tls}
 	server.route 
 		method: "*"
 		path: "/status"
-		handler: ->
-			this.reply('ok')
+		config:
+			handler: ->
+				this.reply('ok')
+	server.route 
+		method: "POST"
+		path: "/signup" 
+		config:
+			handler: (req) ->
+				this.reply(req.payload)
+
 	server
 
