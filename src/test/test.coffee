@@ -7,7 +7,7 @@ Chai.should()
 describe "application", ->
 	describe "API", ->
 		describe 'POST /signup', ->
-			it 'should create the first user', ->
+			it 'should create the first user', (done)->
 				db = {}
 				collection = {}
 				collection.insert = Sinon.stub().yields undefined, {_id:"John", name: "John", password:"password"}

@@ -20,6 +20,7 @@ exports.createServer = (options)->
 				newUser._id = req.payload.name
 				options.db.collection 'users', (err, collection) ->
 					collection.insert newUser, (err, insertedUser)->
+						req.reply('ok')
 
 
 	server
