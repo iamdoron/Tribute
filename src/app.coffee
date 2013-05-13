@@ -13,6 +13,8 @@ server = new Mongodb.Server("127.0.0.1", 27017)
 		server: 
 			tls: tls
 		db: client
+	
+	server.pack.require 'lout', ->
 
 	server.start ->
 		console.log "Server started at: #{server.settings?.uri}"
