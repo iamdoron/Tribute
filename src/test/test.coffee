@@ -12,10 +12,10 @@ describe "application", ->
 				hash = Crypto.createHash 'sha256' 
 				hash.update 'password', 'utf8'
 				expectedHashedPassword = hash.digest 'hex'
-				
+
 				db = {}
 				collection = {}
-				collection.insert = Sinon.stub().yields undefined, {_id:"John", name: "John", password:expectedHashedPassword}
+				collection.insert = Sinon.stub().yields undefined, {_id:"John", password:expectedHashedPassword}
 				db.collection = Sinon.stub().yields undefined, collection
 
 				server = Server.createServer({db:db})
@@ -26,7 +26,7 @@ describe "application", ->
 					(res)->
 						res.statusCode.should.equal(200)
 						collection.insert.callCount.should.equal(1)
-						collection.insert.firstCall.args[0].should.eql {_id:"John", name: "John", password:expectedHashedPassword}
+						collection.insert.firstCall.args[0].should.eql {_id:"John", password:expectedHashedPassword}
 						res.result.should.equal("ok")
 						done()
 
