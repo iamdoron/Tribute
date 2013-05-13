@@ -2,15 +2,20 @@ Mocha = require 'mocha'
 Server = require '../server'
 Chai = require 'chai'
 Sinon = require 'sinon'
+Crypto = require 'crypto'
 Chai.should()
 
 describe "application", ->
 	describe "API", ->
 		describe 'POST /signup', ->
 			it 'should create the first user', (done)->
+				hash = Crypto.createHash 'sha256' 
+				hash.update 'password', 'utf8'
+				expectedHashedPassword = hash.digest 'hex'
+				
 				db = {}
 				collection = {}
-				collection.insert = Sinon.stub().yields undefined, {_id:"John", name: "John", password:"password"}
+				collection.insert = Sinon.stub().yields undefined, {_id:"John", name: "John", password:expectedHashedPassword}
 				db.collection = Sinon.stub().yields undefined, collection
 
 				server = Server.createServer({db:db})
@@ -21,7 +26,7 @@ describe "application", ->
 					(res)->
 						res.statusCode.should.equal(200)
 						collection.insert.callCount.should.equal(1)
-						collection.insert.calledWith({_id:"John", name: "John", password:"password"}).should.be.true
+						collection.insert.firstCall.args[0].should.eql {_id:"John", name: "John", password:expectedHashedPassword}
 						res.result.should.equal("ok")
 						done()
 
