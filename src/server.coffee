@@ -8,11 +8,11 @@ exports.createServer = (options)->
 		server:
 			cors: true
 	
-	Endpoints.options = defaults
-	Endpoints.options = Hoek.applyToDefaults(defaults, options) if options?
-	Endpoints.options.db = options.db if options?.db?
+	settings = defaults
+	settings = Hoek.applyToDefaults(defaults, options) if options?
+	settings.db = options.db if options?.db?
 
-	server = Hapi.createServer '0.0.0.0', 8000, Endpoints.options.server
+	server = Hapi.createServer '0.0.0.0', 8000, settings.server
 
 	server.route 
 		method: "GET"
@@ -24,7 +24,7 @@ exports.createServer = (options)->
 	server.route 
 		method: "POST"
 		path: "/signup" 
-		config: Endpoints.createUser
+		config: Endpoints.generateCreateUserConfig(settings)
 
 	server
 
