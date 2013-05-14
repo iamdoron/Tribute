@@ -47,3 +47,16 @@ describe "API", ->
 					collection.insert.callCount.should.equal(1)
 					JSON.parse(res.result).should.eql reason:"user already exist"
 					done()
+		it 'does not allow the password to be less than 8 charachters', (done) ->
+			[db, collection] = createDbStub()
+			collection.insert = Sinon.stub().yields undefined, {}
+
+			server = Server.createServer({db:db})
+			server.inject
+				url: "/signup"
+				payload: JSON.stringify({name: "John", password:"passwor"}) 
+				method: "POST" ,
+				(res)->
+					collection.insert.callCount.should.equal(0)
+					res.statusCode.should.equal(400)
+					done()
