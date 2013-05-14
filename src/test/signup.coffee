@@ -2,7 +2,6 @@ Mocha = require 'mocha'
 Server = require '../server'
 Chai = require 'chai'
 Sinon = require 'sinon'
-Crypto = require 'crypto'
 Chai.should()
 
 createDbStub = ->
@@ -14,13 +13,10 @@ createDbStub = ->
 describe "API", ->
 	describe 'POST /signup', ->
 		it 'should create the first user', (done)->
-			hash = Crypto.createHash 'sha256' 
-			hash.update 'password', 'utf8'
-			expectedHashedPassword = hash.digest 'hex'
-
 			[db, collection] = createDbStub()
-			collection.insert = Sinon.stub().yields undefined, {_id:"John", password:expectedHashedPassword}
-
+			collection.insert = Sinon.spy (user, callback)->
+				callback undefined, user
+				
 			server = Server.createServer({db:db})
 			server.inject
 				url: "/signup"
@@ -29,7 +25,7 @@ describe "API", ->
 				(res)->
 					res.statusCode.should.equal(200)
 					collection.insert.callCount.should.equal(1)
-					collection.insert.firstCall.args[0].should.eql {_id:"John", password:expectedHashedPassword}
+					collection.insert.firstCall.args[0].should.eql {_id:"John", password:collection.insert.firstCall.args[0].password}
 					res.result.should.equal("ok")
 					done()
 		it 'does not allow more than one user with the same name', (done)->
