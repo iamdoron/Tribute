@@ -21,3 +21,10 @@ exports.generateCreateUserConfig = (options) ->
 								return
 							req.reply('ok')
 			}
+
+exports.generateValidate = (options) ->
+	(username, password, callback)->
+		options.db.collection 'users', (err, collection) ->
+			collection.findOne {_id:username}, {password:1}, (err, user)->
+				Bcrypt.compare password, user.password, (err, isValid) -> 
+					callback err, isValid, { id: username }

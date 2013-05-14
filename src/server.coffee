@@ -1,6 +1,7 @@
 Hapi = require 'hapi'
 Hoek = require 'hoek'
 Endpoints = require './endpoints'
+Login = require './login'
 
 exports.createServer = (options)->
 	defaults = 
@@ -14,6 +15,10 @@ exports.createServer = (options)->
 
 	server = Hapi.createServer '0.0.0.0', 8000, settings.server
 
+	server.auth 'simple', 
+    	scheme: 'basic',
+    	validateFunc: Login.generateValidate(settings)
+	
 	server.route 
 		method: "GET"
 		path: "/status"
