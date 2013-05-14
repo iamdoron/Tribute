@@ -2,7 +2,7 @@ Fs = require 'fs'
 Mongodb = require 'mongodb' 
 server = new Mongodb.Server("127.0.0.1", 27017)
 
-(new Mongodb.Db 'test', server, {w:'majority'}).open (error, client) ->
+(new Mongodb.Db 'test', server, {w:'1'}).open (error, client) ->
 	throw error if (error) 
 
 	tls =
@@ -17,4 +17,4 @@ server = new Mongodb.Server("127.0.0.1", 27017)
 	server.pack.require 'lout', ->
 
 	server.start ->
-		console.log "Server started at: #{server.settings?.uri}"
+		console.log "Server started at: #{server.info?.uri}"

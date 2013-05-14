@@ -28,3 +28,20 @@ describe "API", ->
 					collection.insert.firstCall.args[0].should.eql {_id:"John", password:expectedHashedPassword}
 					res.result.should.equal("ok")
 					done()
+		it 'does not allow more than one user with the same name', (done)->
+
+			db = {}
+			collection = {}
+			collection.insert = Sinon.stub().yields {message:"dup", code:11000}, undefined
+			db.collection = Sinon.stub().yields undefined, collection
+
+			server = Server.createServer({db:db})
+			server.inject
+				url: "/signup"
+				payload: JSON.stringify({name: "John", password:"password"}) 
+				method: "POST" ,
+				(res)->
+					res.statusCode.should.equal(409) #resource conflict
+					collection.insert.callCount.should.equal(1)
+					JSON.parse(res.result).should.eql reason:"user already exist"
+					done()
