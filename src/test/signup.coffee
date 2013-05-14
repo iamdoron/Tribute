@@ -3,14 +3,11 @@ Server = require '../server'
 Chai = require 'chai'
 Sinon = require 'sinon'
 Bcrypt = require 'bcrypt'
+MongoTestHelpers = require('./mongoTestHelpers')
 
 Chai.should()
 
-createDbStub = ->
-	db = {}
-	collection = {}
-	db.collection = Sinon.stub().yields undefined, collection
-	return [db, collection]
+createDbStub = MongoTestHelpers.createDbStub
 
 describe "API", ->
 	describe 'POST /signup', ->
