@@ -7,7 +7,7 @@ exports.createUser =
 	validate:
 		payload:
 			name: Hapi.types.String().rename('_id', {deleteOrig:true})
-			password: Hapi.types.String()
+			password: Hapi.types.String().description('your password')
 
 	handler: (req) ->
 		hash = Crypto.createHash 'sha256' 
