@@ -10,7 +10,7 @@ watch:
 test-watch: 
 	@cd lib;\
 	../node_modules/.bin/mocha \
-		--reporter $(REPORTER) --growl  --watch 
+		--reporter $(REPORTER) --growl --watch 
 clean: 
 	rm -r -f lib
 
