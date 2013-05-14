@@ -2,6 +2,8 @@ Mocha = require 'mocha'
 Server = require '../server'
 Chai = require 'chai'
 Sinon = require 'sinon'
+Bcrypt = require 'bcrypt'
+
 Chai.should()
 
 createDbStub = ->
@@ -16,8 +18,8 @@ describe "API", ->
 			[db, collection] = createDbStub()
 			collection.insert = Sinon.spy (user, callback)->
 				callback undefined, user
-				
-			server = Server.createServer({db:db})
+
+			server = Server.createServer({db:db, bcryptRounds: 4})
 			server.inject
 				url: "/signup"
 				payload: JSON.stringify({name: "John", password:"password"}) 
@@ -33,7 +35,7 @@ describe "API", ->
 			[db, collection] = createDbStub()
 			collection.insert = Sinon.stub().yields {message:"dup", code:11000}, undefined
 
-			server = Server.createServer({db:db})
+			server = Server.createServer({db:db, bcryptRounds: 4})
 			server.inject
 				url: "/signup"
 				payload: JSON.stringify({name: "John", password:"password"}) 
@@ -47,7 +49,7 @@ describe "API", ->
 			[db, collection] = createDbStub()
 			collection.insert = Sinon.stub().yields undefined, {}
 
-			server = Server.createServer({db:db})
+			server = Server.createServer({db:db, bcryptRounds: 4})
 			server.inject
 				url: "/signup"
 				payload: JSON.stringify({name: "John", password:"passwor"}) 
@@ -56,3 +58,22 @@ describe "API", ->
 					collection.insert.callCount.should.equal(0)
 					res.statusCode.should.equal(400)
 					done()
+		it 'should bcrypt the user password', (done)->
+			[db, collection] = createDbStub()
+			collection.insert = Sinon.spy (user, callback)->
+				callback undefined, user
+
+			server = Server.createServer({db:db, bcryptRounds: 4})
+			server.inject
+				url: "/signup"
+				payload: JSON.stringify({name: "John", password:"password"}) 
+				method: "POST" ,
+				(res)->
+					res.statusCode.should.equal(200)
+					collection.insert.callCount.should.equal(1)
+					hash = collection.insert.firstCall.args[0].password
+					hash[4..5].should.equal('04')
+					Bcrypt.compare "password", hash, (err, res) ->
+						res.should.be.true
+						done()
+

@@ -8,7 +8,8 @@ Chai.should()
 describe "API", ->
 	describe "GET /status", ->
 		it "should return reply with ok", (done)->
-			Server.createServer().inject  
+			server = Server.createServer({bcryptRounds: 4})
+			server.inject  
 				url: "/status" 
 				method: "GET" ,
 				(res)->
