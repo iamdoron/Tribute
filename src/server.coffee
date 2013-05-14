@@ -26,5 +26,10 @@ exports.createServer = (options)->
 		path: "/signup" 
 		config: Endpoints.generateCreateUserConfig(settings)
 
+	server.route 
+		method: "PATCH"
+		path: "/users/{name}" 
+		config: Endpoints.generatePatchUserConfig(settings)
+
 	server
 
