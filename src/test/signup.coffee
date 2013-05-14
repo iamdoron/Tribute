@@ -5,6 +5,12 @@ Sinon = require 'sinon'
 Crypto = require 'crypto'
 Chai.should()
 
+createDbStub = ->
+	db = {}
+	collection = {}
+	db.collection = Sinon.stub().yields undefined, collection
+	return [db, collection]
+
 describe "API", ->
 	describe 'POST /signup', ->
 		it 'should create the first user', (done)->
@@ -12,10 +18,8 @@ describe "API", ->
 			hash.update 'password', 'utf8'
 			expectedHashedPassword = hash.digest 'hex'
 
-			db = {}
-			collection = {}
+			[db, collection] = createDbStub()
 			collection.insert = Sinon.stub().yields undefined, {_id:"John", password:expectedHashedPassword}
-			db.collection = Sinon.stub().yields undefined, collection
 
 			server = Server.createServer({db:db})
 			server.inject
@@ -30,10 +34,8 @@ describe "API", ->
 					done()
 		it 'does not allow more than one user with the same name', (done)->
 
-			db = {}
-			collection = {}
+			[db, collection] = createDbStub()
 			collection.insert = Sinon.stub().yields {message:"dup", code:11000}, undefined
-			db.collection = Sinon.stub().yields undefined, collection
 
 			server = Server.createServer({db:db})
 			server.inject
